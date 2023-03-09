@@ -8,31 +8,34 @@
 
 #pragma once
 
-#include <jsi/jsi.h>
+#include <jsi>
 #include <memory>
 
-#if __has_include(<reacthermes/HermesExecutorFactory.h>)
+#if __has_include(<reacthermes>)
   // Hermes (https://hermesengine.dev) (RN 0.65+)
-  #include <reacthermes/HermesExecutorFactory.h>
-#elif __has_include(<hermes/hermes.h>)
+  #include <reacthermes>
+#elif __has_include(<hermes>)
   // Hermes (https://hermesengine.dev)
-  #include <hermes/hermes.h>
-#elif __has_include(<v8runtime/V8RuntimeFactory.h>)
+  #include <hermes>
+#elif __has_include(<v8runtime>)
   // V8 (https://github.com/Kudo/react-native-v8)
-  #include <v8runtime/V8RuntimeFactory.h>
+  #include <v8runtime>
+#elif __has_include(<React>)
+  // JSC with Hermes disabled
+  #include <React>
 #else
   // JSC
-  #include <jsi/JSCRuntime.h>
+  #include <jsi>
 #endif
 
 using namespace facebook;
 
 namespace vision {
 
-static std::unique_ptr<jsi::Runtime> makeJSIRuntime() {
-#if __has_include(<hermes/hermes.h>) || __has_include(<reacthermes/HermesExecutorFactory.h>)
+static std::unique_ptr<jsi> makeJSIRuntime() {
+#if __has_include(<hermes>) || __has_include(<reacthermes>)
   return facebook::hermes::makeHermesRuntime();
-#elif __has_include(<v8runtime/V8RuntimeFactory.h>)
+#elif __has_include(<v8runtime>)
   return facebook::createV8Runtime("");
 #else
   return facebook::jsc::makeJSCRuntime();
